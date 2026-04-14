@@ -43,8 +43,8 @@ export function createApp(): Application {
     }),
   );
 
-  // 3. Body parser
-  app.use(express.json());
+  // 3. Body parser — increased limit for base64 image uploads
+  app.use(express.json({ limit: '3mb' }));
 
   // 4. Correlation ID — attach/propagate X-Correlation-ID
   app.use(correlationMiddleware);

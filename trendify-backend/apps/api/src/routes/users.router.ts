@@ -29,13 +29,30 @@ const pushTokenSchema = z.object({
   token: z.string().min(1),
 });
 
+// Max ~2MB base64 string (~1.5MB image)
+const MAX_BASE64_SIZE = 2 * 1024 * 1024;
+
+const avatarSchema = z.object({
+  avatar: z
+    .string()
+    .min(1, 'avatar is required')
+    .refine(
+      (v) => v.startsWith('data:image/'),
+      'avatar must be a base64 data URI starting with data:image/',
+    )
+    .refine(
+      (v) => Buffer.byteLength(v, 'utf8') <= MAX_BASE64_SIZE,
+      'Image too large — maximum size is ~1.5 MB',
+    ),
+});
+
 // GET /api/v1/users/me
 router.get('/me', async (req, res, next) => {
   try {
     const userId = req.user!.id;
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, email: true, displayName: true, createdAt: true },
+      select: { id: true, email: true, displayName: true, avatar: true, createdAt: true },
     });
     if (!user) return next(new NotFoundError('User not found'));
     res.json(user);
@@ -52,7 +69,7 @@ router.patch('/me', async (req, res, next) => {
     const user = await prisma.user.update({
       where: { id: userId },
       data: { displayName: sanitizeString(body.displayName) },
-      select: { id: true, email: true, displayName: true, createdAt: true },
+      select: { id: true, email: true, displayName: true, avatar: true, createdAt: true },
     });
     res.json(user);
   } catch (err) {
@@ -129,6 +146,41 @@ router.put('/me/preferences', async (req, res, next) => {
     if (err instanceof z.ZodError) {
       return res.status(400).json({ message: 'Validation error', errors: err.errors });
     }
+    next(err);
+  }
+});
+
+// POST /api/v1/users/me/avatar
+router.post('/me/avatar', async (req, res, next) => {
+  try {
+    const userId = req.user!.id;
+    const body = avatarSchema.parse(req.body);
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: { avatar: body.avatar },
+      select: { id: true, email: true, displayName: true, avatar: true, createdAt: true },
+    });
+
+    res.json({ message: 'Avatar updated', avatarUrl: user.avatar });
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return res.status(400).json({ message: 'Validation error', errors: err.errors });
+    }
+    next(err);
+  }
+});
+
+// DELETE /api/v1/users/me/avatar
+router.delete('/me/avatar', async (req, res, next) => {
+  try {
+    const userId = req.user!.id;
+    await prisma.user.update({
+      where: { id: userId },
+      data: { avatar: null },
+    });
+    res.status(204).send();
+  } catch (err) {
     next(err);
   }
 });

@@ -154,6 +154,26 @@
             "url": "{{baseUrl}}/api/v1/users/me/push-token",
             "body": { "mode": "raw", "raw": "{\n  \"token\": \"ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]\"\n}" }
           }
+        },
+        {
+          "name": "Upload Avatar (base64)",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],
+            "url": "{{baseUrl}}/api/v1/users/me/avatar",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"avatar\": \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AJQAB/9k=\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Avatar",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key":"Authorization","value":"Bearer {{accessToken}}"}],
+            "url": "{{baseUrl}}/api/v1/users/me/avatar"
+          }
         }
       ]
     },
