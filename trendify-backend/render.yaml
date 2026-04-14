@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: trendify-api
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: apps/api
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: node dist/server.js
+    healthCheckPath: /health/live
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      # Set these in the Render dashboard (never commit real values):
+      - key: DATABASE_URL
+        sync: false          # paste your Neon connection string in Render dashboard
+      - key: REDIS_URL
+        sync: false          # use Render Redis add-on or Upstash free tier
+      - key: JWT_PRIVATE_KEY
+        sync: false          # RS256 private key PEM (replace \n with literal newlines)
+      - key: JWT_PUBLIC_KEY
+        sync: false          # RS256 public key PEM
+      - key: STRAPI_WEBHOOK_SECRET
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false          # comma-separated, e.g. https://your-app.expo.dev
+      - key: WEBHOOK_URL
+        sync: false          # https://trendify-api.onrender.com/webhooks/strapi

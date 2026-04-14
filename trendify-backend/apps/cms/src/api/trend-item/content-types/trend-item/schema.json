@@ -1,0 +1,23 @@
+{
+  "kind": "collectionType",
+  "collectionName": "trend_items",
+  "info": {
+    "singularName": "trend-item",
+    "pluralName": "trend-items",
+    "displayName": "TrendItem"
+  },
+  "options": { "draftAndPublish": true },
+  "pluginOptions": {
+    "i18n": { "localized": true }
+  },
+  "attributes": {
+    "title":       { "type": "string",   "required": true,  "pluginOptions": { "i18n": { "localized": true } } },
+    "description": { "type": "text",     "required": true,  "pluginOptions": { "i18n": { "localized": true } } },
+    "source":      { "type": "string",   "required": true },
+    "publishedAt": { "type": "datetime", "required": true },
+    "imageUrl":    { "type": "string" },
+    "url":         { "type": "string",   "required": true },
+    "category":    { "type": "enumeration", "enum": ["technology","sports","finance","entertainment","health","science"], "required": true },
+    "regionCode":  { "type": "string" }
+  }
+}

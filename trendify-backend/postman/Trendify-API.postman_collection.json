@@ -1,0 +1,187 @@
+{
+  "info": {
+    "name": "Trendify Backend API",
+    "_postman_id": "trendify-backend-v1",
+    "description": "Complete API collection for the Trendify backend. Set the `baseUrl` variable to your server URL (e.g. http://localhost:3000 or your Render URL). After login/register, the `accessToken` and `refreshToken` variables are auto-set.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "accessToken", "value": "", "type": "string" },
+    { "key": "refreshToken", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Liveness",
+          "request": { "method": "GET", "url": "{{baseUrl}}/health/live" }
+        },
+        {
+          "name": "Readiness",
+          "request": { "method": "GET", "url": "{{baseUrl}}/health/ready" }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json(); if(r.accessToken){ pm.collectionVariables.set('accessToken', r.accessToken); pm.collectionVariables.set('refreshToken', r.refreshToken); }"], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/auth/register",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}" }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json(); if(r.accessToken){ pm.collectionVariables.set('accessToken', r.accessToken); pm.collectionVariables.set('refreshToken', r.refreshToken); }"], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/auth/login",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}" }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [{ "listen": "test", "script": { "exec": ["const r = pm.response.json(); if(r.accessToken){ pm.collectionVariables.set('accessToken', r.accessToken); pm.collectionVariables.set('refreshToken', r.refreshToken); }"], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/auth/refresh",
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/auth/logout",
+            "body": { "mode": "raw", "raw": "{}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Trends",
+      "item": [
+        {
+          "name": "List Trends (all)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/trends" }
+        },
+        {
+          "name": "List Trends (technology)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/v1/trends?categories=technology&pageSize=20", "host": ["{{baseUrl}}"], "path": ["api","v1","trends"], "query": [{"key":"categories","value":"technology"},{"key":"pageSize","value":"20"}] } }
+        },
+        {
+          "name": "List Trends (sports)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/v1/trends?categories=sports&pageSize=20", "host": ["{{baseUrl}}"], "path": ["api","v1","trends"], "query": [{"key":"categories","value":"sports"},{"key":"pageSize","value":"20"}] } }
+        },
+        {
+          "name": "List Trends (finance)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/v1/trends?categories=finance&pageSize=20", "host": ["{{baseUrl}}"], "path": ["api","v1","trends"], "query": [{"key":"categories","value":"finance"},{"key":"pageSize","value":"20"}] } }
+        },
+        {
+          "name": "List Trends (entertainment)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/v1/trends?categories=entertainment&pageSize=20", "host": ["{{baseUrl}}"], "path": ["api","v1","trends"], "query": [{"key":"categories","value":"entertainment"},{"key":"pageSize","value":"20"}] } }
+        },
+        {
+          "name": "List Trends (health)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/v1/trends?categories=health&pageSize=20", "host": ["{{baseUrl}}"], "path": ["api","v1","trends"], "query": [{"key":"categories","value":"health"},{"key":"pageSize","value":"20"}] } }
+        },
+        {
+          "name": "List Trends (science)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/v1/trends?categories=science&pageSize=20", "host": ["{{baseUrl}}"], "path": ["api","v1","trends"], "query": [{"key":"categories","value":"science"},{"key":"pageSize","value":"20"}] } }
+        },
+        {
+          "name": "List Trends (multi-category)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/v1/trends?categories=technology,sports&pageSize=10", "host": ["{{baseUrl}}"], "path": ["api","v1","trends"], "query": [{"key":"categories","value":"technology,sports"},{"key":"pageSize","value":"10"}] } }
+        },
+        {
+          "name": "List Trends (with locale)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/v1/trends?locale=en&pageSize=10", "host": ["{{baseUrl}}"], "path": ["api","v1","trends"], "query": [{"key":"locale","value":"en"},{"key":"pageSize","value":"10"}] } }
+        },
+        {
+          "name": "List Trends (region US)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/v1/trends?regionCode=US&pageSize=10", "host": ["{{baseUrl}}"], "path": ["api","v1","trends"], "query": [{"key":"regionCode","value":"US"},{"key":"pageSize","value":"10"}] } }
+        },
+        {
+          "name": "Get Trend by ID",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/trends/REPLACE_WITH_TREND_ID" }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{accessToken}}"}], "url": "{{baseUrl}}/api/v1/users/me" }
+        },
+        {
+          "name": "Update Display Name",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],
+            "url": "{{baseUrl}}/api/v1/users/me",
+            "body": { "mode": "raw", "raw": "{\n  \"displayName\": \"My Display Name\"\n}" }
+          }
+        },
+        {
+          "name": "Get Preferences",
+          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{accessToken}}"}], "url": "{{baseUrl}}/api/v1/users/me/preferences" }
+        },
+        {
+          "name": "Update Preferences",
+          "request": {
+            "method": "PUT",
+            "header": [{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],
+            "url": "{{baseUrl}}/api/v1/users/me/preferences",
+            "body": { "mode": "raw", "raw": "{\n  \"categories\": [\"technology\", \"science\"],\n  \"regionCode\": \"US\",\n  \"locale\": \"en\"\n}" }
+          }
+        },
+        {
+          "name": "Register Push Token",
+          "request": {
+            "method": "POST",
+            "header": [{"key":"Authorization","value":"Bearer {{accessToken}}"},{"key":"Content-Type","value":"application/json"}],
+            "url": "{{baseUrl}}/api/v1/users/me/push-token",
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookmarks",
+      "item": [
+        {
+          "name": "List Bookmarks",
+          "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{accessToken}}"}], "url": "{{baseUrl}}/api/v1/bookmarks" }
+        },
+        {
+          "name": "Add Bookmark",
+          "request": { "method": "POST", "header": [{"key":"Authorization","value":"Bearer {{accessToken}}"}], "url": "{{baseUrl}}/api/v1/bookmarks/REPLACE_WITH_TREND_ID" }
+        },
+        {
+          "name": "Remove Bookmark",
+          "request": { "method": "DELETE", "header": [{"key":"Authorization","value":"Bearer {{accessToken}}"}], "url": "{{baseUrl}}/api/v1/bookmarks/REPLACE_WITH_TREND_ID" }
+        }
+      ]
+    },
+    {
+      "name": "Metrics",
+      "item": [
+        {
+          "name": "Prometheus Metrics",
+          "request": { "method": "GET", "url": "{{baseUrl}}/metrics" }
+        }
+      ]
+    }
+  ]
+}

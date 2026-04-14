@@ -1,0 +1,20 @@
+{
+  "name": "trendify-backend",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/api",
+    "apps/cms"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=apps/api",
+    "dev": "npm run dev --workspace=apps/api",
+    "test": "npm run test --workspace=apps/api",
+    "lint": "npm run lint --workspace=apps/api",
+    "type-check": "npm run type-check --workspace=apps/api"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}

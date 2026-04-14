@@ -1,0 +1,15 @@
+{
+  "name": "@trendify/cms",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Strapi v5 CMS for Trendify content management (scaffold — Strapi not yet installed)",
+  "scripts": {
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "build": "strapi build"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}

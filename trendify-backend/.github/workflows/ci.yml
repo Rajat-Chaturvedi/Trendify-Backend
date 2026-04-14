@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm install
+        working-directory: trendify-backend
+      - run: npm run lint --workspace=apps/api
+        working-directory: trendify-backend
+
+  type-check:
+    name: Type Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm install
+        working-directory: trendify-backend
+      - run: npm run type-check --workspace=apps/api
+        working-directory: trendify-backend
+
+  test:
+    name: Tests (unit + integration + property)
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm install
+        working-directory: trendify-backend
+      - run: npm run test --workspace=apps/api -- --runInBand --forceExit --passWithNoTests
+        working-directory: trendify-backend
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          REDIS_URL: redis://localhost:6379
+          JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
+          JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
+          STRAPI_WEBHOOK_SECRET: test-secret
+          ALLOWED_ORIGINS: http://localhost:3000
+          WEBHOOK_URL: http://localhost:3000/webhooks/strapi
+          NODE_ENV: test
+
+  build-and-push:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+    needs: [lint, type-check, test]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.REGISTRY_URL }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v5
+        with:
+          context: trendify-backend
+          file: trendify-backend/apps/api/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.REGISTRY_URL }}/trendify-api:latest
+            ${{ secrets.REGISTRY_URL }}/trendify-api:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

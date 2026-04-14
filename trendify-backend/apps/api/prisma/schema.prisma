@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String          @id @default(uuid())
+  email        String          @unique
+  passwordHash String
+  displayName  String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  refreshTokens RefreshToken[]
+  bookmarks     Bookmark[]
+  preferences   UserPreferences?
+  pushTokens    PushToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+model TrendItem {
+  id          String    @id @default(uuid())
+  strapiId    String    @unique
+  title       String
+  description String
+  source      String
+  publishedAt DateTime
+  imageUrl    String?
+  url         String
+  category    Category
+  regionCode  String?
+  locale      String    @default("en")
+  published   Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  bookmarks Bookmark[]
+
+  @@index([category])
+  @@index([regionCode])
+  @@index([locale])
+  @@index([publishedAt(sort: Desc)])
+}
+
+model Bookmark {
+  id          String   @id @default(uuid())
+  userId      String
+  trendItemId String
+  createdAt   DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trendItem TrendItem @relation(fields: [trendItemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, trendItemId])
+  @@index([userId, createdAt(sort: Desc)])
+}
+
+model UserPreferences {
+  id         String     @id @default(uuid())
+  userId     String     @unique
+  categories Category[]
+  regionCode String?
+  locale     String     @default("en")
+  updatedAt  DateTime   @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PushToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+enum Category {
+  technology
+  sports
+  finance
+  entertainment
+  health
+  science
+}

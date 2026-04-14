@@ -1,0 +1,73 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: trendify
+      POSTGRES_PASSWORD: trendify
+      POSTGRES_DB: trendify
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U trendify']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      DATABASE_URL: postgresql://trendify:trendify@postgres:5432/trendify?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      STRAPI_WEBHOOK_SECRET: ${STRAPI_WEBHOOK_SECRET}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:8081}
+      WEBHOOK_URL: http://api:3000/webhooks/strapi
+      PORT: 3000
+      NODE_ENV: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  cms:
+    build:
+      context: apps/cms
+      dockerfile: Dockerfile
+    ports:
+      - '1337:1337'
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: trendify_cms
+      DATABASE_USERNAME: trendify
+      DATABASE_PASSWORD: trendify
+      WEBHOOK_URL: http://api:3000/webhooks/strapi
+      STRAPI_WEBHOOK_SECRET: ${STRAPI_WEBHOOK_SECRET}
+      NODE_ENV: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
