@@ -27,4 +27,4 @@ services:
       - key: ALLOWED_ORIGINS
         sync: false          # comma-separated, e.g. https://your-app.expo.dev
       - key: WEBHOOK_URL
-        sync: false          # https://trendify-api.onrender.com/webhooks/strapi
+        sync: false          # https://trendify-backend-1vta.onrender.com/webhooks/strapi
