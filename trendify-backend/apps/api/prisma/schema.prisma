@@ -19,6 +19,8 @@ model User {
   bookmarks     Bookmark[]
   preferences   UserPreferences?
   pushTokens    PushToken[]
+
+  @@map("users")
 }
 
 model RefreshToken {
@@ -33,6 +35,7 @@ model RefreshToken {
 
   @@index([userId])
   @@index([token])
+  @@map("refresh_tokens")
 }
 
 model TrendItem {
@@ -57,6 +60,7 @@ model TrendItem {
   @@index([regionCode])
   @@index([locale])
   @@index([publishedAt(sort: Desc)])
+  @@map("trend_items")
 }
 
 model Bookmark {
@@ -70,6 +74,7 @@ model Bookmark {
 
   @@unique([userId, trendItemId])
   @@index([userId, createdAt(sort: Desc)])
+  @@map("bookmarks")
 }
 
 model UserPreferences {
@@ -81,6 +86,8 @@ model UserPreferences {
   updatedAt  DateTime   @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
 }
 
 model PushToken {
@@ -92,6 +99,7 @@ model PushToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@map("push_tokens")
 }
 
 enum Category {
