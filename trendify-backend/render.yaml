@@ -5,8 +5,8 @@ services:
     region: oregon
     plan: free
     rootDir: apps/api
-    buildCommand: npm install && npx prisma generate && npm run build
-    startCommand: node dist/server.js
+    buildCommand: npm install && npx prisma generate --schema=apps/api/prisma/schema.prisma && npm run build --workspace=apps/api
+    startCommand: node apps/api/dist/server.js
     healthCheckPath: /health/live
     envVars:
       - key: NODE_ENV
