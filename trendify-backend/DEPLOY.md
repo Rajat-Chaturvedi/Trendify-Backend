@@ -79,7 +79,7 @@ awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' public.pem    # copy this as JWT_PU
 | Variable | Value |
 |---|---|
 | `DATABASE_URL` | Neon **pooler** URL (with your password) |
-| `REDIS_URL` | Upstash Redis URL |
+| `REDIS_URL` | `rediss://default:<your-token>@optimum-bluebird-74398.upstash.io:6379` |
 | `JWT_PRIVATE_KEY` | Output of the `awk` command on `private.pem` |
 | `JWT_PUBLIC_KEY` | Output of the `awk` command on `public.pem` |
 | `STRAPI_WEBHOOK_SECRET` | Any random string, e.g. `openssl rand -hex 32` |
