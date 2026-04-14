@@ -15,7 +15,7 @@
   },
   "prisma": {
     "schema": "prisma/schema.prisma",
-    "seed": "ts-node --project tsconfig.json -r tsconfig-paths/register prisma/seed.ts"
+    "seed": "ts-node --project tsconfig.test.json -r tsconfig-paths/register prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
